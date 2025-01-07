@@ -1,0 +1,28 @@
+services:
+  app:
+    build: 
+      context: .
+    container_name: aplicacao-laravel
+    networks:
+      - app_laravel
+    ports:
+      - '8090:80'
+  db:
+    image: mysql
+    restart: always
+    container_name: mysql
+    networks: 
+      - app_laravel
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data_app:/var/lib/mysq
+
+volumes:
+  mysql_data_app:
+    external: true
+networks:
+  app_laravel:
+    external: true

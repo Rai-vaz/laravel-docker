@@ -2,11 +2,17 @@ services:
   app:
     build: 
       context: .
+    image: app-laravel:latest
     container_name: aplicacao-laravel
     networks:
       - app_laravel
     ports:
       - '8090:80'
+    environment:
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: mysql
     restart: always
@@ -19,6 +25,12 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data_app:/var/lib/mysq
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD']
+      interval: 30s # Intervalo entre verificações
+      timeout: 10s  # Tempo máximo para a resposta
+      retries: 5    # Número de tentativas antes de marcar como 'unhealthy'
+      start_period: 5s # Tempo de espera antes de começar o health check
 
 volumes:
   mysql_data_app:

@@ -41,8 +41,6 @@ WORKDIR /var/www/html
 
 COPY ./ ./
 
-# COPY --from=build-frontend app/public ./public
-
 # RUN php artisan config:cache
 # RUN php artisan route:cache
 # RUN php artisan view:cache
@@ -50,23 +48,6 @@ COPY ./ ./
 
 # Copiar arquivos do Laravel e instalar dependências
 RUN composer install --optimize-autoloader --no-dev
-
-
-
-# Etapa 3: Preparação do servidor com Nginx
-# FROM php:8.3.15-fpm-alpine3.21 AS production
-
-# Instalar o Nginx
-# RUN apk update && apk add --no-cache \
-#     nginx \
-#     && docker-php-ext-install \
-#     pdo_mysql \
-#     mbstring \
-#     zip \
-#     bcmath \
-#     opcache 
-
-# Copiar arquivos do Laravel
 
 COPY --from=build-frontend /app/public ./public
 
@@ -79,4 +60,4 @@ RUN chmod -R 775 ./storage
 
 EXPOSE 80
 
-CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "php artisan migrate & php-fpm & nginx -g 'daemon off;'"]

@@ -9,10 +9,13 @@ services:
     ports:
       - '8090:80'
     environment:
-      - DB_HOST=db
+      - DB_HOST=192.168.15.9
+      # - APP_URL=http://localhost:8090
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./:/var/www/html
   db:
     image: mysql
     restart: always

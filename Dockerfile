@@ -13,7 +13,7 @@ RUN npm run build
 
 
 # Etapa 2: Configuração do Laravel com PHP 8.3
-FROM php:8.3.15-fpm-alpine3.21 AS build-backend
+FROM php:8.3.15-fpm-alpine3.21
 
 # Instalar dependências do sistema necessárias para o Laravel
 RUN apk update && apk add --no-cache \
@@ -46,15 +46,16 @@ COPY ./ ./
 # RUN php artisan view:cache
 # RUN php artisan storage:link
 
-# Copiar arquivos do Laravel e instalar dependências
+#instalar dependências do laravel
 RUN composer install --optimize-autoloader --no-dev
 
+#copiar os arquivo de build
 COPY --from=build-frontend /app/public ./public
 
 # Copiar o arquivo de configuração do Nginx
 COPY docker/config/nginx.conf /etc/nginx/nginx.conf
 
-# Configurar permissões
+# Configurar permissões do usuario no nginx
 RUN chown -R www-data:www-data ./storage
 RUN chmod -R 775 ./storage
 
